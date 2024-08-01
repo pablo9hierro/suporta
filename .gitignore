@@ -1,0 +1,41 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# local env files
+.env*.local
+NEXT_PUBLIC_SUPABASE_URL=https://tnanrzsqpvhwlcubftji.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRuYW5yenNxcHZod2xjdWJmdGppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjE4ODA3ODgsImV4cCI6MjAzNzQ1Njc4OH0.XiKC7-Tfr1ZtduzmwS_Cl8ilvEHCmZJlDBrAFjPqjPM
+
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+
