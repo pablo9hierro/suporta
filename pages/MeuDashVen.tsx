@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import supabase from '@/app/api/supabase';
+import supabase from '@/pages/api/supabase';
 
 interface UserMetadata {
     user_id: string;
@@ -12,6 +12,7 @@ const MeuDashVen = () => {
     const [vendedores, setVendedores] = useState<UserMetadata[]>([]);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -23,6 +24,7 @@ const MeuDashVen = () => {
             }
 
             const userId = session.user.id;
+            setCurrentUserId(userId);
 
             try {
                 // Buscar o tipo de usuário
@@ -32,7 +34,7 @@ const MeuDashVen = () => {
                     .eq('user_id', userId)
                     .single();
 
-                if (metadataError || !['admin', 'supervisor'].includes(userMetadata?.user_type || '')) {
+                if (metadataError || userMetadata?.user_type !== 'vendedor') {
                     router.push('/login');
                     return;
                 }
@@ -41,7 +43,8 @@ const MeuDashVen = () => {
                 const { data: vendedoresData, error: vendedoresError } = await supabase
                     .from('user_metadata')
                     .select('*')
-                    .eq('user_type', 'vendedor');
+                    .eq('user_type', 'vendedor')
+                    .eq('user_id', userId); // Filtra para o vendedor atual
 
                 if (vendedoresError) throw vendedoresError;
 

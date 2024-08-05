@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import supabase from '@/app/api/supabase';
+import supabase from '@/pages/api/supabase';
 
 const AdminForm: React.FC = () => {
   const [nome, setNome] = useState('');

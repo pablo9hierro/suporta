@@ -1,4 +1,4 @@
-import supabase from '@/app/api/supabase';
+import supabase from '@/pages/api/supabase';
 import { useState } from 'react';
 
 function IndexPage() {

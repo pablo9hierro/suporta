@@ -1,94 +1,86 @@
+// pages/login.tsx
+
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import supabase from '@/app/api/supabase';
+import supabase from './api/supabase';
+
 
 const LoginPage = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
-    const router = useRouter();
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        setError(null);
+  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-        try {
-            // Autentica o usuário
-            const { data: { user }, error: signInError } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            });
+    try {
+      const { data: { user }, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-            if (signInError || !user) throw signInError;
+      if (error) throw error;
 
-            // Busca o tipo de usuário na tabela user_metadata
-            const { data: userMetadata, error: metadataError } = await supabase
-                .from('user_metadata')
-                .select('user_type')
-                .eq('user_id', user.id)
-                .single();
+      if (user) {
+        const { data, error: metadataError } = await supabase
+          .from('user_metadata')
+          .select('user_type')
+          .eq('user_id', user.id)
+          .single();
 
-            if (metadataError || !userMetadata) throw metadataError;
+        if (metadataError) throw metadataError;
 
-            // Redireciona com base no tipo de usuário
-            switch (userMetadata.user_type) {
-                case 'admin':
-                    router.push('/MeuDashAdmin');
-                    break;
-                case 'supervisor':
-                    router.push('/MeuDashSup');
-                    break;
-                case 'vendedor':
-                    router.push('/MeuDashVen');
-                    break;
-                default:
-                    setError('Tipo de usuário desconhecido');
-                    break;
-            }
-        } catch (error) {
-            if (error instanceof Error) {
-                setError(error.message);
-            } else {
-                setError('Erro desconhecido');
-            }
-        } finally {
-            setLoading(false);
+        if (data) {
+          switch (data.user_type) {
+            case 'admin':
+              router.push('/MeuDashAdmin');
+              break;
+            case 'supervisor':
+              router.push('/MeuDashSup');
+              break;
+            case 'vendedor':
+              router.push('/MeuDashVen');
+              break;
+            default:
+              setError('Tipo de usuário desconhecido.');
+          }
         }
-    };
+      }
+    } catch (error) {
+      setError('Erro ao fazer login. Verifique suas credenciais.');
+    }
+  };
 
-    return (
+  return (
+    <div>
+      <h1>Login</h1>
+      <form onSubmit={handleLogin}>
         <div>
-            <h1>Login</h1>
-            <form onSubmit={handleLogin}>
-                <label>
-                    Email:
-                    <input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                    />
-                </label>
-                <br />
-                <label>
-                    Senha:
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                    />
-                </label>
-                <br />
-                <button type="submit" disabled={loading}>
-                    {loading ? 'Entrando...' : 'Entrar'}
-                </button>
-                {error && <p style={{ color: 'red' }}>{error}</p>}
-            </form>
+          <label htmlFor="email">Email:</label>
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
-    );
+        <div>
+          <label htmlFor="password">Password:</label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit">Login</button>
+        {error && <p>{error}</p>}
+      </form>
+    </div>
+  );
 };
 
 export default LoginPage;
